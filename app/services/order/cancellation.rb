@@ -8,6 +8,12 @@ class Order::Cancellation
   end
 
   def call
+    return if cancelled?
+
     order.update!(status: 'cancelled')
+  end
+
+  def cancelled?
+    order.status == 'cancelled'
   end
 end

@@ -9,28 +9,37 @@ class Invoice::Create
   end
 
   def call
-    if status == 'credit'
-      invoice = Invoice.create(
-        order: order,
-        status: 'credit'
-      )
-      order.update(status: 'cancelled')
-      AccountEvent.create(
-        account: order.account,
-        resource: invoice,
-        topic: 'invoice.credit.create'
-      )
-    else
-      invoice = Invoice.create(
-        order: order,
-        status: 'debit'
-      )
-      order.update(status: 'invoiced')
-      AccountEvent.create(
-        account: order.account,
-        resource: invoice,
-        topic: 'invoice.debit.create'
-      )
+    ActiveRecord::Base.transaction do
+      invoice = create_invoice!
+      update_order_status
+      create_account_event!(invoice)
     end
+  end
+
+  def credit?
+    status == 'credit'
+  end
+
+  private
+
+  def create_invoice!
+    Invoice.create!(
+      order: order,
+      status: credit? ? 'credit' : 'debit'
+    )
+  end
+
+  def update_order_status
+    new_status = credit? ? 'cancelled' : 'invoiced'
+    order.update!(status: new_status)
+  end
+
+  def create_account_event!(invoice)
+    invoice_topic = credit? ? 'credit' : 'debit'
+    AccountEvent.create!(
+      account: order.account,
+      resource: invoice,
+      topic: "invoice.#{invoice_topic}.create"
+    )
   end
 end
