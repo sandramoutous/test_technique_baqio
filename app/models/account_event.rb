@@ -2,5 +2,5 @@
 
 class AccountEvent < ApplicationRecord
   belongs_to :account
-  belongs_to :resource
+  belongs_to :resource, polymorphic: true
 end
