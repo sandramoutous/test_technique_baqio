@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_17_131013) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_19_213401) do
   create_table "account_events", force: :cascade do |t|
     t.integer "account_id", null: false
     t.string "resource_type"
@@ -115,6 +115,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_17_131013) do
     t.index ["account_id"], name: "index_orders_on_account_id"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["fulfillment_id"], name: "index_orders_on_fulfillment_id"
+  end
+
+  create_table "versions", force: :cascade do |t|
+    t.string "item_type"
+    t.integer "item_id"
+    t.string "action"
+    t.string "column"
+    t.string "value"
+    t.string "value_changed"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_type", "item_id"], name: "index_versions_on_item"
   end
 
   add_foreign_key "account_events", "accounts"

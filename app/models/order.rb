@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
+  include Versionable
+
   belongs_to :account
   belongs_to :customer
   belongs_to :fulfillment, optional: true
@@ -12,6 +14,8 @@ class Order < ApplicationRecord
     validated
     cancelled
   ].freeze
+
+  VERSIONED_COLUMNS = %w[status total_price].freeze
 
   validates :reference, presence: true, uniqueness: true
   validates :status, presence: true, inclusion: { in: STATUSES, allow_blank: false }, allow_nil: false
