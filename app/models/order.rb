@@ -33,4 +33,22 @@ class Order < ApplicationRecord
       Order::Cancellation.new(self).call
     end
   end
+
+  def status_name
+    case status
+    when 'pending' then 'En attente'
+    when 'invoiced' then 'Facturé'
+    when 'validated' then 'Validé'
+    when 'cancelled' then 'Annulé'
+    else ''
+    end
+  end
+
+  def fulfillment_status
+    fulfillment&.status
+  end
+
+  def total_quantity
+    order_lines.sum(&:quantity) || 0
+  end
 end

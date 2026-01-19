@@ -3,8 +3,7 @@ require 'rails_helper'
 RSpec.describe Order, type: :model do
   let(:account) { FactoryBot.create(:account) }
   let(:customer) { FactoryBot.build(:andrea, account: account) }
-  let(:order) { FactoryBot.build(:order, account: account, customer: customer) }
-  # let(:order_line) { OrderLine.create!(order: order, name: 'Macôn (caisse 24)', quantity: 5, vat_rate: 20, vat_amount: 20, pretax_unit_price: 80, unit_price: 100) }
+  let(:order) { FactoryBot.create(:order, account: account, customer: customer) }
 
   describe 'validations' do
     it 'is valid with valid attributes' do
@@ -45,7 +44,7 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe 'cancel' do
+  describe '#cancel' do
     it 'returns nil if order cancelled' do
       order.status = 'cancelled'
       expect(order.cancel).to be nil
@@ -70,6 +69,30 @@ RSpec.describe Order, type: :model do
         expect(Order::Cancellation).to receive(:new).with(order).and_return(service_double)
         expect(service_double).to receive(:call)
         order.cancel
+      end
+    end
+  end
+
+  describe 'fulfillment' do
+    it 'returns nil if fulfillment does not exist' do
+      expect(order.fulfillment_status).to be_nil
+    end
+
+    it 'returns fulfillment status' do
+      order.fulfillment = Fulfillment.new(status: 'shipped')
+      expect(order.fulfillment_status).to eq('shipped')
+    end
+  end
+
+  describe '#total_quantity' do
+    context 'when the order has multiple order lines' do
+      let(:order_line) { OrderLine.create!(order: order, name: 'Macôn (caisse 24)', quantity: 5) }
+      let(:order_line2) { OrderLine.create!(order: order, name: 'Cidre brut', quantity: 3) }
+
+      it 'returns the order_lines quantity sum' do
+        order_line
+        order_line2
+        expect(order.total_quantity).to eq(8)
       end
     end
   end

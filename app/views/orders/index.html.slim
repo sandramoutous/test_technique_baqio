@@ -11,12 +11,12 @@ table.orders-list.table
   tbody
     - orders.each do |order|
       tr
-        td=order.reference
-        td=order.status
-        td=order.customer.fullname
-        td=order.fulfillment&.fulfillment_service&.name
-        td=order.fulfillment&.status
-        td.text-right= order.order_lines.sum(&:quantity)
+        td= order.reference
+        td= order.status_name
+        td= order.customer&.fullname
+        td= order.fulfillment&.fulfillment_service&.name
+        td= order.fulfillment_status
+        td.text-right= order.total_quantity
         td.text-right= order.total_price
 
 = paginate orders, remote: true
