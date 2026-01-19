@@ -28,9 +28,9 @@ class Order < ApplicationRecord
     return if self.cancelled?
 
     if self.invoiced?
-      Invoice::Create.new(order).call
+      Invoice::Create.new(self, 'credit').call
     elsif self.validated?
-      Order::Cancellation.new(order).call
+      Order::Cancellation.new(self).call
     end
   end
 end
