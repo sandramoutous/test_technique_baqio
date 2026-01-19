@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class OrdersController
+class OrdersController < ApplicationController
   def index
     orders = Order.page(params[:page]).per(50)
 

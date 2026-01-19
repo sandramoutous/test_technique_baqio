@@ -2,7 +2,7 @@ table.orders-list.table
   thead
     tr
       th Référence
-      th Status
+      th Statut
       th Client
       th Transporteur
       th Status expédition
@@ -12,11 +12,11 @@ table.orders-list.table
     - orders.each do |order|
       tr
         td=order.reference
-        td=order.status_name
-        td=order.customer
-        td=order.fulfillment.fulfillment_service
-        td=order.fulfillment_status
-        td.text-right= order.total_quantity
+        td=order.status
+        td=order.customer.fullname
+        td=order.fulfillment&.fulfillment_service&.name
+        td=order.fulfillment&.status
+        td.text-right= order.order_lines.sum(&:quantity)
         td.text-right= order.total_price
 
 = paginate orders, remote: true
